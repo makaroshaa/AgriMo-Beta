@@ -1,0 +1,114 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+
+{% block style %}
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'css/home-d1.css' %}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.maptiler.com/maptiler-sdk-js/v1.1.1/maptiler-sdk.umd.js"></script>
+    <link href="https://cdn.maptiler.com/maptiler-sdk-js/v1.1.1/maptiler-sdk.css" rel="stylesheet" />
+    <script src="https://cdn.maptiler.com/leaflet-maptilersdk/v1.0.0/leaflet-maptilersdk.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map</title>
+{% endblock %}
+{% block content %}
+	<div class="wrapper">
+        <h1>Your Weather Station Location</h1>
+        <form method="POST" action="{% url 'geolocation' %}" id="latlon">
+            {% csrf_token %}
+            <input type="text" name="lat"> Latitude
+            <br>
+            <input type="text" name="long"> Longitude
+            <br>
+            <button type="submit">Save</button>
+        </form>
+        <div id="map"></div>
+        <form method="POST" action="{% url 'add_shape' %}">
+        {% csrf_token %}
+        <input type="hidden" name="drawn_shapes[]" id="drawn-shapes-input">
+        <button type="submit"><p>Save Drawings</p><i class="fa fa-check" aria-hidden="true"></i></button>
+        </form>
+
+        <br>
+	</div>
+    <form method="POST" action="{% url 'startif' %}">
+        {% csrf_token %}
+            <button class= "mete" type="submit"><p>Start Weather Station</p></button>
+        </form>
+    <br>
+    <form method="POST" action="{% url 'endif' %}">
+        {% csrf_token %}
+            <button class= "mete" type="submit" style="left: 1100px; width: 200px;"><p>Stop Weather Station</p></button>
+    </form>
+{% endblock %}
+    {% block dscript %}<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>{% endblock %}
+{% block script %}
+        const key = 'iCRDXEEMTLDhCmkDfPu5';
+
+        {% if not lat %}
+        const map = L.map('map').setView([43.2220, 76.8512], 8);
+        const mtLayer = L.maptilerLayer({
+        apiKey: key,
+        style: L.MaptilerStyle.STREETS,
+        }).addTo(map);
+        {% else %}
+        const map = L.map('map').setView([{{lat}}, {{long}}], 8);
+        const mtLayer = L.maptilerLayer({
+        apiKey: key,
+        style: L.MaptilerStyle.STREETS,
+        }).addTo(map);
+        var marker = L.marker([{{lat}}, {{long}}]).addTo(map);
+        {% endif %}
+
+        const drawnItems = new L.FeatureGroup().addTo(map);
+        map.addControl(new L.Control.Draw({
+        edit: {
+          featureGroup: drawnItems,
+        },
+        draw: {
+          polygon: true,
+          polyline: false,
+          rectangle: true,
+          circle: false,
+          marker: false,
+        },
+        }));
+
+
+        map.on(L.Draw.Event.CREATED, function (event) {
+            const layer = event.layer;
+            drawnItems.addLayer(layer);
+            // Get the drawn shapes as GeoJSON and update the hidden input field
+            const drawnShapes = drawnItems.toGeoJSON();
+            document.getElementById('drawn-shapes-input').value = JSON.stringify(drawnShapes);
+        });
+
+        const drawnShapes = [
+          {% for shape in drawn_shapes %}
+            {{ shape|safe }},
+          {% endfor %}
+        ];
+
+        drawnShapes.forEach(function(shape) {
+            const geojsonLayer = L.geoJSON(shape).addTo(map);
+
+            const hideButton = document.createElement('button');
+            hideButton.innerHTML = 'Hide';
+            hideButton.addEventListener('click', function() {
+                map.removeLayer(geojsonLayer);
+
+                const index = drawnShapes.indexOf(shape);
+                if (index > -1) {
+                    drawnShapes.splice(index, 1);
+                }
+                document.getElementById('drawn-shapes-input').value = JSON.stringify(drawnShapes);
+            });
+
+            geojsonLayer.bindPopup(hideButton);
+        });
+{% endblock %}

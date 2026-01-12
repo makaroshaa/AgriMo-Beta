@@ -1,0 +1,597 @@
+{% load static %}
+<html>
+<head>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'css/st-s.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/icon.png' %}">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Forecast</title>
+</head>
+<body>
+	<div class="navbar">
+		<ul class="navbar-l">
+			<li class="navbar-i">AGRIMO
+			</li>
+			<li class="navbar-i" id="but"><button onclick="show()"><i class="fa fa-bars" aria-hidden="true" style="color:white;"></i></button>
+			</li>
+			<li class="navbar-i" style="float: right;"><a href="#">Help</a>
+			</li>
+			<li class="navbar-i" style="float: right;"><a href="#">Profile</a>
+			</li>
+		</ul>
+	</div>
+	<div id="sidebar">
+  		<div class="table-container">
+    		<table>
+      			<tr>
+        			<td><i class="fa fa-home icon" aria-hidden="true"></i></td>
+        			<td class="text"><a href="{% url 'index' %}">Home page</a></td>
+      			</tr>
+      			<tr>
+        			<td><i class="fa fa-user icon" aria-hidden="true"></i></td>
+        			<td class="text"><a href="{% url 'index' %}">Profile</a></td>
+      			</tr>
+      			<tr>
+        			<td><i class="fa fa-area-chart icon" aria-hidden="true"></i></td>
+        			<td class="text"><a href="{% url 'graphsai' %}">Crop monitoring</a></td>
+      			</tr>
+      			<tr>
+        			<td><i class="fa fa-area-chart icon" aria-hidden="true"></i></td>
+        			<td class="text"><a href="{% url 'graphsai' %}">AI forecast</a></td>
+      			</tr>
+      			<tr>
+        			<td><i class="fa fa-map-marker icon" aria-hidden="true"></i></td>
+        			<td class="text"><a href="{% url 'geolocation' %}">Geolocation</a></td>
+      			</tr>
+      			<tr>
+        			<td><i class="fa fa-briefcase icon" aria-hidden="true"></i></td>
+        			<td class="text"><a href="{% url 'specialists' %}">Job vacancy</a></td>
+      			</tr>
+      			<tr>
+        			<td><i class="fa fa-calendar icon" aria-hidden="true"></i></td>
+        			<td class="text"><a href="{% url 'events' %}">Events</a></td>
+      			</tr>
+      			<tr>
+        			<td><i class="fa fa-shopping-cart icon" aria-hidden="true"></i></td>
+        			<td class="text"><a href="{% url 'shop' %}">Shop</a></td>
+      			</tr>
+      			<tr>
+        			<td><i class="fa fa-book icon" aria-hidden="true"></i></td>
+        			<td class="text"><a href="{% url 'education' %}">Education</a></td>
+      			</tr>
+      			<tr>
+        			<td><i class="fa fa-cog icon" aria-hidden="true"></i></td>
+        			<td class="text"><a href="#">Settings</a></td>
+      			</tr>
+    		</table>
+  		</div>
+	</div>
+	<div id="step"></div>
+
+	<div id="main">
+    	<div class="annow">
+      		<h1>Most likely you have a crop infection!</h1>
+    	</div>
+    	<div class="annow">
+      		<h1>Drought expected!</h1>
+    	</div>
+    	<h1 id="title-f">Crop monitoring</h1>
+    	<div id="switcher">
+      		<ul>
+        		<li>Interval:</li>
+        		<li><form action="{% url 'graphs' param='min' %}"><button type="submit">Minute</button></form></li>
+        		<li><form action="{% url 'graphs' param='day' %}"><button type="submit">Day</button></form></li>
+        		<li><form action="{% url 'graphs' param='week' %}"><button type="submit">Week</button></form></li>
+        		<li><form action="{% url 'graphs' param='month' %}"><button type="submit">Month</button></form></li>
+        		<li><form action="{% url 'graphs' param='year' %}"><button type="submit">Year</button></form></li>
+      		</ul>
+    	</div>
+
+    	<div class="small-stat">
+      		<div class="desc-stat">
+        		<div class="title-stat">
+          			<p>Statistics</p>
+          			<h5>Temperature</h5>
+        		</div>
+        		<select id="time" name="time" form="time">
+          			<option value="month">Month</option>
+          			<option value="week">Week</option>
+          			<option value="year">Year</option>
+          			<option value="day">Day</option>
+        		</select>
+        		<hr>
+      		</div>
+        	<canvas id="myLineChart1" width="700" height="480"></canvas>
+    	</div>
+    	<div class="small-stat">
+      		<div class="desc-stat">
+        		<div class="title-stat">
+          			<p>Statistics</p>
+          			<h5>Ignition</h5>
+        		</div>
+        		<select id="time" name="time" form="time">
+          			<option value="month">Month</option>
+          			<option value="week">Week</option>
+          			<option value="year">Year</option>
+          			<option value="day">Day</option>
+        		</select>
+        		<hr>
+      		</div>
+      		<canvas id="myLineChart2" width="700px" height="480px"></canvas>
+    	</div>
+    	<div class="long-stat">
+      		<div class="desc-stat-l">
+        		<div class="title-stat-l">
+          			<p>Statistics</p>
+          			<h5>Humidity (%)</h5>
+        		</div>
+        		<select id="time" name="time" form="time">
+          			<option value="month">Month</option>
+          			<option value="week">Week</option>
+          			<option value="year">Year</option>
+          			<option value="day">Day</option>
+        		</select>
+        		<hr>
+      		</div>
+      		<canvas id="myLineChart" width="1650" height="470"></canvas>
+    	</div>
+    	<div class="small-stat">
+      		<div class="desc-stat">
+        		<div class="title-stat">
+          			<p>Statistics</p>
+          			<h5>Atmospheric pressure (hPa)</h5>
+        		</div>
+        		<select id="time" name="time" form="time">
+          			<option value="month">Month</option>
+          			<option value="week">Week</option>
+          			<option value="year">Year</option>
+          			<option value="day">Day</option>
+        		</select>
+        		<hr>
+      		</div>
+      		<canvas id="myBarChart" width="700" height="480"></canvas>
+    	</div>
+    	<div class="small-stat">
+      		<div class="desc-stat">
+        		<div class="title-stat">
+          			<p>Statistics</p>
+          			<h5>Smell level</h5>
+        		</div>
+        		<select id="time" name="time" form="time">
+          			<option value="month">Month</option>
+          			<option value="week">Week</option>
+          			<option value="year">Year</option>
+          			<option value="day">Day</option>
+        		</select>
+        		<hr>
+      		</div>
+       		<canvas id="myBarChart1" width="700" height="480"></canvas>
+    	</div>
+    	<div class="long-stat">
+      		<div class="desc-stat-l">
+        		<div class="title-stat-l">
+          			<p>Statistics</p>
+          			<h5>Sun radiation</h5>
+        		</div>
+        		<select id="time" name="time" form="time">
+          			<option value="month">Month</option>
+          			<option value="week">Week</option>
+          			<option value="year">Year</option>
+          			<option value="day">Day</option>
+        		</select>
+        		<hr>
+      		</div>
+       		<canvas id="myLineChart3" width="1650" height="470"></canvas>
+    	</div>
+  	</div>
+  	<script>
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+        var container = document.getElementById('main');
+        container.style.opacity = 1;
+    });
+    const datasets = [
+      {
+        label: 'Humidity',
+        borderColor: '#637A36',
+        data: [45, 23, 21, 15, 47, 85, 70, 45, 40, 83, 45],
+        fill: false,
+        pointStyle: 'circle',
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: 'white',
+        pointHoverBorderWidth: 3,
+        pointBorderWidth: 2,
+      },
+      {
+        label: 'Soil Moisture',
+        borderColor: '#FD984A',
+        data: [0, 10, 40, 30, 40, 50, 23, 55, 80, 42, 90],
+        fill: false,
+        pointStyle: 'circle',
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: 'white',
+        pointHoverBorderWidth: 3,
+        pointBorderWidth: 2,
+      },
+      {
+        label: 'Raindrop',
+        borderColor: '#985B3F',
+        data: [80, 65, 15, 84, 45, 60, 75, 90, 75, 60, 45],
+        fill: false,
+        pointStyle: 'circle',
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: 'white',
+        pointHoverBorderWidth: 3,
+        pointBorderWidth: 2,
+      },
+    ];
+    const dataset1 = [
+      {
+        label: 'Temperature',
+        borderColor: '#995A3F',
+        data: [10, 15, 10, 23, 16, 5, 18],
+        fill: true,
+        backgroundColor: 'rgba(153, 90, 63, 0.2)',
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 4,
+      },
+    ];
+    const dataset2 = [
+      {
+        label: 'Flame',
+        borderColor: '#FFCE79',
+        data: [150, 243, 324, 281, 288, 129, 184],
+        fill: true,
+        backgroundColor: 'rgba(255, 206, 121, 0.2)',
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 4,
+      },
+    ];
+
+    const dataset3 = {
+      labels: [1, 2, 3, 4, 5, 6, 7],
+      datasets: [
+        {
+          label: 'Pressure',
+          data: [430, 245, 640, 587, 550, 478, 223],
+          backgroundColor: '#C5D8C9',
+          hoverBackgroundColor: '#75A17E',
+          borderColor: '#75A17E',
+          borderRadius: 10,
+          barThickness: 30,
+        },
+      ],
+    };
+
+    const dataset4 = {
+      labels: [1, 2, 3, 4, 5, 6, 7],
+      datasets: [
+        {
+          label: 'Odor',
+          data: [1469, 1676, 759, 541, 1742, 573, 887],
+          backgroundColor: 'rgba(99, 122, 54, 0.5)',
+          hoverBackgroundColor: '#777629',
+          borderColor: '#75A17E',
+          borderRadius: 10,
+          barThickness: 30,
+        },
+      ],
+    };
+
+    const dataset5 = [
+      {
+        label: 'Sun Radiation',
+        borderColor: '#FD984A',
+        data: [346, 250, 564, 445, 546, 846, 470, 321, 402, 308, 546, 346, 250, 564, 445, 546, 846, 470, 321, 402, 308, 546, 346, 250, 564, 445, 546, 846, 470, 321, 470, 321],
+        fill: true,
+        backgroundColor: 'rgba(153, 90, 63, 0.2)',
+        tension: 0.5,
+        pointRadius: 0,
+        borderWidth: 5,
+      },
+    ];
+
+
+    const config5 = {
+      type: 'line',
+      data: {
+        labels: ['', '', '', 3, '', '', 6, '', '', 9, '', '', 12, '', '', 15, '', '', 18, '', '', 21, '', '', 24, '', '', 27, '', '', 30],
+        datasets: dataset5,
+      },
+      options: {
+        responsive: false,
+        scales: {
+          x: {
+            display: true,
+            grid: {
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'Days',
+            },
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: '',
+            },
+            suggestedMin: 0,
+            suggestedMax: 1500,
+            ticks: {
+              stepSize: 500,
+            },
+          },
+        },
+      },
+    };
+
+
+
+    const config = {
+      type: 'line',
+      data: {
+        labels: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30],
+        datasets: datasets,
+      },
+      options: {
+        responsive: false,
+        scales: {
+          x: {
+            display: true,
+            grid: {
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'May',
+            },
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Влажность',
+            },
+            suggestedMin: 0,
+            suggestedMax: 100,
+            ticks: {
+              stepSize: 25,
+            },
+          },
+        },
+      },
+    };
+
+    const config1 = {
+      type: 'line',
+      data: {
+        labels: [1, 2, 3, 4, 5, 6, 7],
+        datasets: dataset1,
+      },
+      options: {
+        responsive: false,
+        scales: {
+          x: {
+            display: true,
+            grid: {
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'Days',
+            },
+          },
+          y: {
+            display: true,
+            grid: {
+              display: false,
+            },
+            title: {
+              display: true,
+              text: '°C',
+            },
+            suggestedMin: 0,
+            suggestedMax: 30,
+            ticks: {
+              stepSize: 7.5,
+            },
+          },
+        },
+      },
+    };
+
+    const config2 = {
+      type: 'line',
+      data: {
+        labels: [1, 2, 3, 4, 5, 6, 7],
+        datasets: dataset2,
+      },
+      options: {
+        responsive: false,
+        scales: {
+          x: {
+            display: true,
+            grid: {
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'Days',
+            },
+          },
+          y: {
+            display: true,
+            grid: {
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'hPa',
+            },
+            suggestedMin: 0,
+            suggestedMax: 1000,
+            ticks: {
+              stepSize: 200,
+            },
+          },
+        },
+      },
+    };
+
+
+    const config3 = {
+      type: 'bar',
+      data: dataset3,
+      options: {
+        responsive: false,
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Days',
+            },
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: '',
+            },
+            suggestedMin: 0,
+            suggestedMax: 1000,
+            ticks: {
+              stepSize: 200,
+            },
+          },
+        },
+      },
+    };
+
+    const config4 = {
+      type: 'bar',
+      data: dataset4,
+      options: {
+        responsive: false,
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Days',
+            },
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: '',
+            },
+            suggestedMin: 0,
+            suggestedMax: 2000,
+            ticks: {
+              stepSize: 400,
+            },
+          },
+        },
+      },
+    };
+
+    const ctx = document.getElementById('myLineChart').getContext('2d');
+    new Chart(ctx, config);
+    const ctx1 = document.getElementById('myLineChart1').getContext('2d');
+    new Chart(ctx1, config1);
+    const ctx2 = document.getElementById('myLineChart2').getContext('2d');
+    new Chart(ctx2, config2);
+    const ctx3 = document.getElementById('myBarChart').getContext('2d');
+    new Chart(ctx3, config3);
+    const ctx4 = document.getElementById('myBarChart1').getContext('2d');
+    new Chart(ctx4, config4);
+    const ctx5 = document.getElementById('myLineChart3').getContext('2d');
+    new Chart(ctx5, config5);
+
+    const canvasElements = document.getElementsByTagName('canvas');
+
+        for (let i = 0; i < canvasElements.length; i++) {
+            const canvasId = canvasElements[i].getAttribute('id');
+            if (canvasId === 'myLineChart1' || canvasId === 'myLineChart2' || canvasId === 'myBarChart' || canvasId === 'myBarChart1') {
+                if (document.getElementById('main').classList.contains('shrink')) {
+                    canvasElements[i].style.width = '94%';
+                    canvasElements[i].style.height = '80%';
+                }
+                else {
+                    canvasElements[i].style.width = '94%';
+                    canvasElements[i].style.height = '80%';
+                }
+            }
+            else if (canvasId === 'myLineChart' || canvasId === 'myLineChart3') {
+                if (document.getElementById('main').classList.contains('shrink')) {
+                    canvasElements[i].style.width = '94%';
+                    canvasElements[i].style.height = '70%';
+                }
+                else {
+                    canvasElements[i].style.width = '94%';
+                    canvasElements[i].style.height = '70%';
+                }
+            }
+        }
+    function show() {
+        var sidebar = document.getElementById('sidebar');
+        var content = document.getElementById('main');
+        var buttonIcon = document.querySelector('#but i');
+        adjustCanvasSize();
+        sidebar.classList.toggle('active');
+        content.classList.toggle('shrink');
+        if (buttonIcon.classList.contains('fa-bars')) {
+            buttonIcon.classList.remove('fa-bars');
+            buttonIcon.classList.add('fa-times');
+        } else {
+            buttonIcon.classList.remove('fa-times');
+            buttonIcon.classList.add('fa-bars');
+        }
+    }
+
+    function adjustCanvasSize() {
+        const canvasElements = document.getElementsByTagName('canvas');
+
+        for (let i = 0; i < canvasElements.length; i++) {
+            const canvasId = canvasElements[i].getAttribute('id');
+            if (canvasId === 'myLineChart1' || canvasId === 'myLineChart2' || canvasId === 'myBarChart' || canvasId === 'myBarChart1') {
+                if (document.getElementById('main').classList.contains('shrink')) {
+                    canvasElements[i].style.width = '94%';
+                    canvasElements[i].style.height = '60%';
+                }
+                else {
+                    canvasElements[i].style.width = '94%';
+                    canvasElements[i].style.height = '60%';
+                }
+            }
+            else if (canvasId === 'myLineChart' || canvasId === 'myLineChart3') {
+                if (document.getElementById('main').classList.contains('shrink')) {
+                    canvasElements[i].style.width = '94%';
+                    canvasElements[i].style.height = '60%';
+                }
+                else {
+                    canvasElements[i].style.width = '94%';
+                    canvasElements[i].style.height = '60%';
+                }
+            }
+        }
+    }
+
+
+  </script>
+</body>
+</html>

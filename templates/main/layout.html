@@ -1,0 +1,124 @@
+{% load static %}
+<html>
+<head>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'css/lay-d.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/icon.png' %}">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="-1" />
+	{% block style %}{% endblock %}
+</head>
+<body>
+	<div class="navbar">
+		<ul class="navbar-l">
+			<li class="navbar-i">AGRIMO
+			</li>
+			<li class="navbar-i" id = "but"><button onclick ="show()"><i class="fa fa-bars" aria-hidden="true" style="color:white;"></i></button>
+			</li>
+			<li class="navbar-i" style="float: right;"><a href="#">Help</a>
+			</li>
+			<li class="navbar-i" style="float: right;"><a href="#">Profile</a>
+			</li>
+		</ul>
+	</div>
+	<div id="sidebar">
+  	<div class="table-container">
+    	<table>
+      <tr>
+        <td><i class="fa fa-home icon" aria-hidden="true"></i></td>
+        <td class="text"><a href="{% url 'index' %}">Home page</a></td>
+      </tr>
+      <tr>
+        <td><i class="fa fa-user icon" aria-hidden="true"></i></td>
+        <td class="text"><a href="{% url 'profileo' %}">Profile</a></td>
+      </tr>
+      <tr>
+        <td><i class="fa fa-area-chart icon" aria-hidden="true"></i></td>
+        <td class="text"><a href="{% url 'graphsai' %}">Crop monitoring</a></td>
+      </tr>
+      <tr>
+        <td><i class="fa fa-area-chart icon" aria-hidden="true"></i></td>
+        <td class="text"><a href="{% url 'graphsai' %}">Forecast</a></td>
+      </tr>
+      <tr>
+        <td><i class="fa fa-map-marker icon" aria-hidden="true"></i></td>
+        <td class="text"><a href="{% url 'geolocation' %}">Geolocation</a></td>
+      </tr>
+      <tr>
+        <td><i class="fa fa-briefcase icon" aria-hidden="true"></i></td>
+        <td class="text"><a href="{% url 'specialists' %}">Job vacancy</a></td>
+      </tr>
+      <tr>
+        <td><i class="fa fa-calendar icon" aria-hidden="true"></i></td>
+        <td class="text"><a href="{% url 'events' %}">Events</a></td>
+      </tr>
+      <tr>
+        <td><i class="fa fa-shopping-cart icon" aria-hidden="true"></i></td>
+        <td class="text"><a href="{% url 'shop' %}">Shop</a></td>
+      </tr>
+      <tr>
+        <td><i class="fa fa-book icon" aria-hidden="true"></i></td>
+        <td class="text"><a href="{% url 'education' %}">Education</a></td>
+      </tr>
+      <tr>
+        <td><i class="fa fa-cog icon" aria-hidden="true"></i></td>
+        <td class="text"><a href="#">Settings</a></td>
+      </tr>
+    	</table>
+  	</div>
+	</div>
+
+  <div id="content">
+	   {% block content %}
+	   {% endblock %}
+  </div>
+    {% block dscript %}{% endblock %}
+  <script>
+
+    window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            var container = document.getElementById('content');
+            container.style.opacity = 1;
+        }, 500);
+    });
+    {% block script %}
+    {% endblock %}
+    function toggleReadonly() {
+        var inputElement = document.querySelector('input');
+        document.getElementById('data').classList.toggle('edit');
+        document.getElementById('ed').classList.toggle('edit');
+
+        if (inputElement.readOnly) {
+            inputElement.readOnly = false;
+            document.getElementById("iz").innerHTML = "Cancel";
+            document.getElementById('sub').style.opacity = 1;
+        } else {
+            inputElement.readOnly = true;
+            document.getElementById("iz").innerHTML = "Edit";
+            document.getElementById('sub').style.opacity = 0;
+
+        }
+    }
+    function show() {
+        var sidebar = document.getElementById('sidebar');
+        var content = document.getElementById('content');
+        var buttonIcon = document.querySelector('#but i');
+
+        sidebar.classList.toggle('active');
+        content.classList.toggle('shrink');
+        if (buttonIcon.classList.contains('fa-bars')) {
+            buttonIcon.classList.remove('fa-bars');
+            buttonIcon.classList.add('fa-times');
+        } else {
+            buttonIcon.classList.remove('fa-times');
+            buttonIcon.classList.add('fa-bars');
+        }
+    }
+  </script>
+</body>
+</html>
